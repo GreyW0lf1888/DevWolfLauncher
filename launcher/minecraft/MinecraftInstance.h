@@ -123,7 +123,7 @@ class MinecraftInstance : public BaseInstance {
     WorldList* worldList();
 
     //////  Launch stuff //////
-    QList<Task::Ptr> createUpdateTask() override;
+    Task::Ptr createUpdateTask() override;
     LaunchTask* createLaunchTask(AuthSessionPtr account, MinecraftTarget::Ptr targetToJoin) override;
     QStringList extraArguments() override;
     QStringList verboseDescription(AuthSessionPtr session, MinecraftTarget::Ptr targetToJoin) override;
@@ -156,6 +156,13 @@ class MinecraftInstance : public BaseInstance {
     virtual QStringList processMinecraftArgs(AuthSessionPtr account, MinecraftTarget::Ptr targetToJoin) const;
 
     virtual JavaVersion getJavaVersion();
+
+    ////// Offline Cosmetic Management //////
+    QString getOfflineSkinPath() const;
+    void setOfflineSkinPath(const QString &path);
+    QString getOfflineCapePath() const;
+    void setOfflineCapePath(const QString &path);
+    QStringList getOfflineCosmeticArguments(AuthSessionPtr session) const;
 
    protected:
     QMap<QString, QString> createCensorFilterFromSession(AuthSessionPtr session);
