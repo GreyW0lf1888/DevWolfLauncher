@@ -40,6 +40,8 @@
 #include "ui/pages/BasePage.h"
 #include "ui/widgets/MinecraftSettingsWidget.h"
 
+class QVBoxLayout;
+
 class InstanceSettingsPage : public MinecraftSettingsWidget, public BasePage {
     Q_OBJECT
 
@@ -59,4 +61,7 @@ class InstanceSettingsPage : public MinecraftSettingsWidget, public BasePage {
         return true;
     }
     QString helpPage() const override { return "Instance-settings"; }
+
+private:
+    void createOfflineCosmeticsPanel(QVBoxLayout *mainLayout);
 };
