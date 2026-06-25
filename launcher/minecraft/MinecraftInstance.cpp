@@ -177,6 +177,56 @@ void MinecraftInstance::saveNow()
     m_components->saveNow();
 }
 
+QString MinecraftInstance::getOfflineSkinPath() const {
+    return settings()->get("OfflineSkinPath").toString();
+}
+
+void MinecraftInstance::setOfflineSkinPath(const QString &path) {
+    settings()->set("OfflineSkinPath", path);
+}
+
+QString MinecraftInstance::getOfflineCapePath() const {
+    return settings()->get("OfflineCapePath").toString();
+}
+
+void MinecraftInstance::setOfflineCapePath(const QString &path) {
+    settings()->set("OfflineCapePath", path);
+}
+
+QStringList MinecraftInstance::getOfflineCosmeticArguments(AuthSessionPtr session) const {
+    QStringList args;
+
+    if (session && session->status == AuthSession::PlayOffline) {
+        QString skin = getOfflineSkinPath();
+        QString cape = getOfflineCapePath();
+
+        if (!skin.isEmpty() || !cape.isEmpty()) {
+            QString agentDir = QDir(instanceConfigFolder()).absoluteFilePath("runtime_agents");
+            QDir().mkpath(agentDir);
+            QString agentJarPath = agentDir + "/PrismCosmeticAgent.jar";
+
+            QFile jarFile(agentJarPath);
+            if (jarFile.open(QIODevice::WriteOnly)) {
+                const char agentBytecode[] = { 
+                    0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x08, 0x00, 0x08, 0x00
+                    // [Your utility tool's hex data goes here]
+                };
+                jarFile.write(agentBytecode, sizeof(agentBytecode));
+                jarFile.close();
+            }
+
+            args << QString("-javaagent:%1").arg(agentJarPath);
+            if (!skin.isEmpty()) args << QString("-Dprism.offline.skin=%1").arg(skin);
+            if (!cape.isEmpty()) args << QString("-Dprism.offline.cape=%1").arg(cape);
+
+            args << "-Dminecraft.api.auth.host=http://127.0.0.1:0"
+                 << "-Dminecraft.api.account.host=http://127.0.0.1:0"
+                 << "-Dminecraft.api.session.host=http://127.0.0.1:0";
+        }
+    }
+    return args;
+}
+
 void MinecraftInstance::loadSpecificSettings()
 {
     if (isSpecificSettingsLoaded())
