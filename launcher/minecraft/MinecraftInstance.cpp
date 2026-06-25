@@ -679,7 +679,9 @@ QStringList MinecraftInstance::javaArguments()
     if (javaVersion.isModular() && shouldApplyOnlineFixes())
         // allow reflective access to java.net - required by the skin fix
         args << "--add-opens" << "java.base/java.net=ALL-UNNAMED";
-
+    
+         QStringList MinecraftInstance::javaArguments()
+    
     return args;
 }
 
